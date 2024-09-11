@@ -37,7 +37,10 @@ with open("crowdstrike.json", "w") as f:
 sorted_jobs = []
 
 for i in results:
-    post_date = i["postedOn"].split("Posted ")[1].split(" Days Ago")[0]
+    if "postedOn" in i:
+        post_date = i["postedOn"].split("Posted ")[1].split(" Days Ago")[0]
+    else:
+        continue
     if post_date == "Yesterday":
         post_date = "1"
     if post_date == "Today":
@@ -46,11 +49,15 @@ for i in results:
         post_date = post_date.strip("+")
     i["age"] = post_date
 
-results.sort(key=lambda x: int(x["age"]), reverse=True)
-
-for i in results:
+for i in results: 
+    if "age" in i:
+        sorted_jobs.append([i["title"], i["age"], i["externalPath"]])
+sorted_jobs.sort(key=lambda x: x[1], reverse=True)
+for i in sorted_jobs:
+    title, age, url = i
     print("-" * 30)
-    print(i["title"])
-    print(i["age"])
-    print(f"https://crowdstrike.wd5.myworkdayjobs.com/en-US/crowdstrikecareers{i['externalPath']}")
+    print(title)
+    print(age)
+    print(f"https://crowdstrike.wd5.myworkdayjobs.com/en-US/crowdstrikecareers{url}")
     print()
+
